@@ -30,9 +30,10 @@ class Runner(Observer):
 
     def void_action(self):
         print("Stopping Action")
-        self.stop = True
-        self.thread.join()
-        print("Action Stopped")
+        if self.stop is False:
+            self.stop = True
+            self.thread.join()
+            print("Action Stopped")
 
     @abstractmethod
     def is_trigger(self, line):
