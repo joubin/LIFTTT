@@ -69,6 +69,7 @@ class AutoOff(Runner):
         return default_duration
 
     def update(self, *args, **kwargs):
+        print(args)
         if self.is_trigger(args)[0]:
             self.run_action()
 
