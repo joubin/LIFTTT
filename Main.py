@@ -1,87 +1,61 @@
-import configparser
 import json
+import re
 import threading
+import time
 from abc import abstractmethod
-from pygtail import Pygtail
-import re, sys, time
 from datetime import datetime
+
 import requests
+from pygtail import Pygtail
 
-from abc import ABCMeta, abstractmethod
+from Util import Observer, Observable, Singleton, Configuration
 
-SERVER = "pi"
-PORT = "33425"
-PIN_CODE = "335-28-246"
-
-RUNNERS = []
-
-
-class Configuration():
-    config = configparser.ConfigParser()
-    config.read('config.cfg')
-
-
-class Observable(object):
-
-    def __init__(self):
-        self.observers = []
-
-    def register(self, observer):
-        if not observer in self.observers:
-            self.observers.append(observer)
-
-    def unregister(self, observer):
-        if observer in self.observers:
-            self.observers.remove(observer)
-
-    def unregister_all(self):
-        if self.observers:
-            del self.observers[:]
-
-    def update_observers(self, *args, **kwargs):
-        for observer in self.observers:
-            observer.update(*args, **kwargs)
-
-
-class Observer(object):
-    __metaclass__ = ABCMeta
-
-    @abstractmethod
-    def update(self, *args, **kwargs):
-        pass
+SERVER = Configuration.config["DEFAULT"]["server"]
+PORT = Configuration.config["DEFAULT"]["port"]
+PIN_CODE = Configuration.config["DEFAULT"]["auth_code"]
 
 
 class Runner(Observer):
     def __init__(self, name, config):
         self.name = name
         self.command = config
+        self.thread: threading.Thread = None
+        self.stop = False
 
-    def run(self):
-        thread = threading.Thread(target=self.main)
-        thread.start()
+    def run_action(self):
+        self.stop = False
+        self.thread = threading.Thread(target=self.main)
+        self.thread.start()
 
+    def void_action(self):
+        self.stop = True
+        self.thread.join()
+
+    @abstractmethod
     def is_trigger(self, line):
-        match = TailF.regex.match(line)
-        if match is None:
-            return False, None
-        return match.groups()[2] == self.name, match
+        pass
 
     @abstractmethod
     def main(self):
         raise NotImplementedError()
 
 
-class Auto_Off(Runner):
-    auto_off_regex = re.compile("(\d*).*(\w)", re.IGNORECASE)
+class AutoOff(Runner):
+    # auto_off = 30s
+    # auto_off = 30m
+    auto_off_time_regex = re.compile("(\d*).*(\w)", re.IGNORECASE)
 
     def __init__(self, name, config, aid, iid):
         super().__init__(name, config)
         self.time = self.parse_auto_off(config['auto_off'])
         self.aid = aid
         self.iid = iid
+        self.on_off_regex = re.compile(config['on_off_regex'], re.IGNORECASE)
+        TailF.Instance().register(self)
 
-    def parse_auto_off(self, str, default_duration=1):
-        match = Auto_Off.auto_off_regex.match(str)
+    @staticmethod
+    def parse_auto_off(input_string, default_duration=1):
+        match = AutoOff.auto_off_time_regex.match(input_string)
         if match is not None:
             duration = float(match.groups()[0])
             multiplier = match.groups()[1]
@@ -94,19 +68,34 @@ class Auto_Off(Runner):
             return duration * multiplier
         return default_duration
 
+    def update(self, *args, **kwargs):
+        if self.is_trigger(args)[0]:
+            self.run_action()
+
     def is_trigger(self, line):
-        match, groups = super().is_trigger(line)
-        if not match:
-            return match, groups
-        return match and groups.groups()[3] == "On", groups
+        match = self.on_off_regex.match(line)
+        if match is None:
+            return False
+        return match.groups()[2] == self.name and match.groups()[3] == "On"
+
+    def wait(self, time_seconds: int = 0):
+        _time = time_seconds
+        while _time != 0:
+            time.sleep(1)
+            _time -= 1
+            if self.stop is True:
+                raise InterruptedError
 
     def main(self):
         print("running logic and waiting", self.time)
-        time.sleep(self.time)
-        HomeBridge.request("PUT", self.aid, self.iid, False)
+        try:
+            self.wait(self.time)
+            HomeBridge.request("PUT", self.aid, self.iid, False)
+        except InterruptedError:
+            pass
 
 
-class HomeBridge():
+class HomeBridge:
     url = "http://" + SERVER + ":" + PORT
     accessories = "/accessories"
     characteristics = "/characteristics"
@@ -143,35 +132,29 @@ class HomeBridge():
         for i in data:
             aid = i['aid']
             name = None
-            on = None
             for services in i['services']:
                 for characteristics in services['characteristics']:
-                    if characteristics[
-                        'type'] == "00000023-0000-1000-8000-0026BB765291":
+                    if characteristics['type'] == "00000023-0000-1000-8000-0026BB765291":
                         name = characteristics
-                    if characteristics[
-                        'type'] == "00000025-0000-1000-8000-0026BB765291":
+                    if characteristics['type'] == "00000025-0000-1000-8000-0026BB765291":
                         on = characteristics
                         # print("aid --->", aid)
                         # print("name -->", name)
                         # print("on -->", on)
                         # print("\n")
                         if name['value'] in Configuration.config.sections():
-                            if Configuration.config[name['value']][
-                                'type'] == "auto_off":
-                                RUNNERS.append(Auto_Off(name=name['value'],
-                                                        config=
-                                                        Configuration.config[
-                                                            name['value']],
-                                                        aid=aid, iid=on['iid']))
+                            if Configuration.config[name['value']]['type'] == "auto_off":
+                                AutoOff(name=name['value'],
+                                        config=Configuration.config[name['value']], aid=aid,
+                                        iid=on['iid'])
 
 
+@Singleton
 class TailF(Observable):
-    log = "/var/log/homebridge.log"
-    regex = re.compile("\[(.*)\] \[(.*)\] (.*)\ - Set state: (Off|On)",
-                       re.IGNORECASE)
+    log = Configuration.config['DEFAULT']['log_file']
 
     def __init__(self, file_path=log):
+        super().__init__()
         self.log_file_path = file_path
         self.pygtail = Pygtail(self.log_file_path)
 
@@ -180,16 +163,17 @@ class TailF(Observable):
         print(line)
         match = TailF.regex.match(line)
         if match is not None:
-            time = match.groups()[0]
-            platform = match.groups()[1]
-            name = match.groups()[2]
+            action_time = match.groups()[0]
+            # platform = match.groups()[1]
+            # name = match.groups()[2]
             state = match.groups()[3]
-            time = datetime.strptime(time, '%m/%d/%Y, %I:%M:%S %p')
+            action_time = datetime.strptime(action_time, '%m/%d/%Y, %I:%M:%S %p')
             state = True if state == 'On' else False
-            return time, state
+            return action_time, state
         return None
 
     def __consume(self):
+        # noinspection PyBroadException
         try:
             while True:
                 self.pygtail.next()
@@ -202,15 +186,12 @@ class TailF(Observable):
             try:
                 line = self.pygtail.next()
                 print(line)
-                triggered = [runner for runner in RUNNERS if
-                             runner.is_trigger(line)]
-                [runner.run() for runner in triggered]
+                self.update_observers(line)
             except (StopIteration, PermissionError):
                 time.sleep(0.5)
 
-
-if __name__ == '__main__':
-    hb = HomeBridge()
-    hb.map_accessories()
-    log = TailF()
-    log.read()
+# if __name__ == '__main__':
+#     hb = HomeBridge()
+#     hb.map_accessories()
+#     log = TailF().Instance()
+#     log.read()
