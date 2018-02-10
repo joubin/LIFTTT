@@ -68,9 +68,9 @@ class AutoOff(Runner):
             return duration * multiplier
         return default_duration
 
-    def update(self, *args, **kwargs):
-        print(args)
-        if self.is_trigger(args)[0]:
+    def update(self, payload):
+        print(payload)
+        if self.is_trigger(payload)[0]:
             self.run_action()
 
     def is_trigger(self, line):
