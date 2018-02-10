@@ -70,7 +70,7 @@ class AutoOff(Runner):
 
     def update(self, payload):
         print(payload)
-        if self.is_trigger(payload)[0]:
+        if self.is_trigger(payload):
             self.run_action()
 
     def is_trigger(self, line):
