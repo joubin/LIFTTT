@@ -7,18 +7,51 @@ import re, sys, time
 from datetime import datetime
 import requests
 
+from abc import ABCMeta, abstractmethod
+
 SERVER = "pi"
 PORT = "33425"
 PIN_CODE = "335-28-246"
 
 RUNNERS = []
 
+
 class Configuration():
     config = configparser.ConfigParser()
     config.read('config.cfg')
 
 
-class Runner:
+class Observable(object):
+
+    def __init__(self):
+        self.observers = []
+
+    def register(self, observer):
+        if not observer in self.observers:
+            self.observers.append(observer)
+
+    def unregister(self, observer):
+        if observer in self.observers:
+            self.observers.remove(observer)
+
+    def unregister_all(self):
+        if self.observers:
+            del self.observers[:]
+
+    def update_observers(self, *args, **kwargs):
+        for observer in self.observers:
+            observer.update(*args, **kwargs)
+
+
+class Observer(object):
+    __metaclass__ = ABCMeta
+
+    @abstractmethod
+    def update(self, *args, **kwargs):
+        pass
+
+
+class Runner(Observer):
     def __init__(self, name, config):
         self.name = name
         self.command = config
@@ -29,15 +62,18 @@ class Runner:
 
     def is_trigger(self, line):
         match = TailF.regex.match(line)
-        return match.groups()[2] == self.name
-
+        if match is None:
+            return False, None
+        return match.groups()[2] == self.name, match
 
     @abstractmethod
     def main(self):
         raise NotImplementedError()
 
+
 class Auto_Off(Runner):
     auto_off_regex = re.compile("(\d*).*(\w)", re.IGNORECASE)
+
     def __init__(self, name, config, aid, iid):
         super().__init__(name, config)
         self.time = self.parse_auto_off(config['auto_off'])
@@ -52,11 +88,17 @@ class Auto_Off(Runner):
             if multiplier == "m":
                 multiplier = 60
             elif multiplier == "h":
-                multiplier = 60*60
+                multiplier = 60 * 60
             else:
                 multiplier = 1
-            return duration*multiplier
+            return duration * multiplier
         return default_duration
+
+    def is_trigger(self, line):
+        match, groups = super().is_trigger(line)
+        if not match:
+            return match, groups
+        return match and groups.groups()[3] == "On", groups
 
     def main(self):
         print("running logic and waiting", self.time)
@@ -73,7 +115,6 @@ class HomeBridge():
         'authorization': PIN_CODE,
         'Sender': "LIFTTT"
     }
-
 
     @staticmethod
     def create_payload(aid, iid, value):
@@ -105,25 +146,27 @@ class HomeBridge():
             on = None
             for services in i['services']:
                 for characteristics in services['characteristics']:
-                    if characteristics['type'] == "00000023-0000-1000-8000-0026BB765291":
+                    if characteristics[
+                        'type'] == "00000023-0000-1000-8000-0026BB765291":
                         name = characteristics
-                    if characteristics['type'] == "00000025-0000-1000-8000-0026BB765291":
+                    if characteristics[
+                        'type'] == "00000025-0000-1000-8000-0026BB765291":
                         on = characteristics
                         # print("aid --->", aid)
                         # print("name -->", name)
                         # print("on -->", on)
                         # print("\n")
                         if name['value'] in Configuration.config.sections():
-                            if Configuration.config[name['value']]['type'] == "auto_off":
-                                RUNNERS.append(Auto_Off(name=name['value'], config=Configuration.config[name['value']],aid=aid, iid=on['iid']))
+                            if Configuration.config[name['value']][
+                                'type'] == "auto_off":
+                                RUNNERS.append(Auto_Off(name=name['value'],
+                                                        config=
+                                                        Configuration.config[
+                                                            name['value']],
+                                                        aid=aid, iid=on['iid']))
 
 
-
-
-
-
-
-class TailF:
+class TailF(Observable):
     log = "/var/log/homebridge.log"
     regex = re.compile("\[(.*)\] \[(.*)\] (.*)\ - Set state: (Off|On)",
                        re.IGNORECASE)
@@ -154,15 +197,17 @@ class TailF:
             pass
 
     def read(self):
-        self.__consume() # Just throwing away all logs until this moment.
+        self.__consume()  # Just throwing away all logs until this moment.
         while True:
             try:
                 line = self.pygtail.next()
                 print(line)
-                triggered = [runner for runner in RUNNERS if runner.is_trigger(line)]
+                triggered = [runner for runner in RUNNERS if
+                             runner.is_trigger(line)]
                 [runner.run() for runner in triggered]
             except (StopIteration, PermissionError):
                 time.sleep(0.5)
+
 
 if __name__ == '__main__':
     hb = HomeBridge()
