@@ -30,7 +30,7 @@ class Runner(Observer):
 
     def void_action(self):
         print("Stopping Action")
-        if self.stop is False:
+        if self.stop is False and self.thread is not None:
             self.stop = True
             self.thread.join()
             print("Action Stopped")
