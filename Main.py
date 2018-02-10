@@ -23,13 +23,16 @@ class Runner(Observer):
         self.stop = False
 
     def run_action(self):
+        print("Running Action")
         self.stop = False
         self.thread = threading.Thread(target=self.main)
         self.thread.start()
 
     def void_action(self):
+        print("Stopping Action")
         self.stop = True
         self.thread.join()
+        print("Action Stopped")
 
     @abstractmethod
     def is_trigger(self, line):
@@ -69,15 +72,18 @@ class AutoOff(Runner):
         return default_duration
 
     def update(self, payload):
-        print(payload)
-        if self.is_trigger(payload):
+        if self.is_trigger(payload, "On"):
             self.run_action()
+        elif self.is_trigger(payload, "Off"):
+            self.void_action()
+        else:
+            print("Doing nothing")
 
-    def is_trigger(self, line):
+    def is_trigger(self, line, state : str = "On"):
         match = self.on_off_regex.match(line)
         if match is None:
             return False
-        return match.groups()[2] == self.name and match.groups()[3] == "On"
+        return match.groups()[2] == self.name and match.groups()[3] == state
 
     def wait(self, time_seconds: int = 0):
         _time = time_seconds
