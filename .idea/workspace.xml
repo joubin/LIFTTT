@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1ebd941f-5f59-4054-a37c-afe01ca39e2c" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/Util.py" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/Main.py" afterPath="$PROJECT_DIR$/Main.py" />
-      <change beforePath="$PROJECT_DIR$/config.cfg" afterPath="$PROJECT_DIR$/config.cfg" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -30,8 +26,8 @@
       <file leaf-file-name="Main.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2670">
-              <caret line="178" column="31" lean-forward="true" selection-start-line="178" selection-start-column="31" selection-end-line="178" selection-end-column="31" />
+            <state relative-caret-position="2895">
+              <caret line="193" column="22" lean-forward="true" selection-start-line="193" selection-start-column="22" selection-end-line="193" selection-end-column="22" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -269,8 +265,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2670">
-          <caret line="178" column="31" lean-forward="true" selection-start-line="178" selection-start-column="31" selection-end-line="178" selection-end-column="31" />
+        <state relative-caret-position="2895">
+          <caret line="193" column="22" lean-forward="true" selection-start-line="193" selection-start-column="22" selection-end-line="193" selection-end-column="22" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>

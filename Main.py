@@ -190,8 +190,8 @@ class TailF(Observable):
             except (StopIteration, PermissionError):
                 time.sleep(0.5)
 
-# if __name__ == '__main__':
-#     hb = HomeBridge()
-#     hb.map_accessories()
-#     log = TailF().Instance()
-#     log.read()
+
+if __name__ == '__main__':
+    hb = HomeBridge()
+    hb.map_accessories()
+    TailF.Instance().read()
