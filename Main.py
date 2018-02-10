@@ -81,6 +81,7 @@ class AutoOff(Runner):
 
     def is_trigger(self, line, state : str = "On"):
         match = self.on_off_regex.match(line)
+        print(match)
         if match is None:
             return False
         return match.groups()[2] == self.name and match.groups()[3] == state
