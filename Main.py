@@ -80,6 +80,7 @@ class AutoOff(Runner):
             print("Doing nothing")
 
     def is_trigger(self, line, state : str = "On"):
+        print(line)
         match = self.on_off_regex.match(line)
         print(match)
         if match is None:
