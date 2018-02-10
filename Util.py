@@ -71,5 +71,6 @@ class Observer(object):
 
 @Singleton
 class Configuration():
-    config = configparser.ConfigParser()
-    config.read('config.cfg')
+    def __init__(self):
+        self.config = configparser.ConfigParser()
+        self.config.read('config.cfg')

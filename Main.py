@@ -10,9 +10,9 @@ from pygtail import Pygtail
 
 from Util import Observer, Observable, Singleton, Configuration
 
-SERVER = Configuration.config["DEFAULT"]["server"]
-PORT = Configuration.config["DEFAULT"]["port"]
-PIN_CODE = Configuration.config["DEFAULT"]["auth_code"]
+SERVER = Configuration.Instance().config["DEFAULT"]["server"]
+PORT = Configuration.Instance().config["DEFAULT"]["port"]
+PIN_CODE = Configuration.Instance().config["DEFAULT"]["auth_code"]
 
 
 class Runner(Observer):
@@ -142,16 +142,16 @@ class HomeBridge:
                         # print("name -->", name)
                         # print("on -->", on)
                         # print("\n")
-                        if name['value'] in Configuration.config.sections():
-                            if Configuration.config[name['value']]['type'] == "auto_off":
+                        if name['value'] in Configuration.Instance().config.sections():
+                            if Configuration.Instance().config[name['value']]['type'] == "auto_off":
                                 AutoOff(name=name['value'],
-                                        config=Configuration.config[name['value']], aid=aid,
+                                        config=Configuration.Instance().config[name['value']], aid=aid,
                                         iid=on['iid'])
 
 
 @Singleton
 class TailF(Observable):
-    log = Configuration.config['DEFAULT']['log_file']
+    log = Configuration.Instance().config['DEFAULT']['log_file']
 
     def __init__(self, file_path=log):
         super().__init__()
