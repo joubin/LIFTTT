@@ -1,6 +1,5 @@
 from typing import Dict
 
-from main import SERVER, PORT, PIN_CODE
 import json
 import requests
 from Util import logger, Configuration, Singleton
@@ -10,6 +9,7 @@ from automations import automation_module as Runner
 @Singleton
 class HomeBridge:
     def __init__(self):
+        from main import SERVER, PORT, PIN_CODE
         self.url = "http://" + SERVER + ":" + PORT
         self.accessories = "/accessories"
         self.characteristics = "/characteristics"
