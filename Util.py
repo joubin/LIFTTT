@@ -1,5 +1,7 @@
 import configparser
 from abc import ABCMeta, abstractmethod
+import logging
+
 
 class Singleton:
     """
@@ -69,8 +71,17 @@ class Observer(object):
     def update(self, payload):
         pass
 
+
 @Singleton
 class Configuration():
     def __init__(self):
         self.config = configparser.ConfigParser()
         self.config.read('config.cfg')
+
+
+logging.basicConfig(level=Configuration.Instance().config["DEFAULT"]["logging_level"])
+logger = logging.getLogger(__name__)
+
+logging.info("Starting time %s", time.time())
+logger.info("Server %s", SERVER)
+logger.info("Port %s", PORT)
