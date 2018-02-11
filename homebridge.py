@@ -3,8 +3,7 @@ from typing import Dict
 import json
 import requests
 from Util import logger, Configuration, Singleton
-from automations import *
-
+from automations import timer_off_module
 
 @Singleton
 class HomeBridge:
