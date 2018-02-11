@@ -45,6 +45,8 @@ class HomeBridge:
             logger.error(exception)
 
     def map_accessories(self):
+        # noinspection PyUnresolvedReferences
+        from automations import *
         data = self.get_accessories()
         data = data['accessories']
         for i in data:
