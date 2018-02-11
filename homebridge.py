@@ -46,7 +46,10 @@ class HomeBridge:
     def map_accessories(self):
         # noinspection PyUnresolvedReferences
         data = self.get_accessories()
+        logger.debug(data)
         data = data['accessories']
+        logger.debug(data)
+
         for i in data:
             aid = i['aid']
             name = None
