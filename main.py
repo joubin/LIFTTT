@@ -15,6 +15,7 @@ logging.info("Starting time %s", time.time())
 logger.info("Server %s", SERVER)
 logger.info("Port %s", PORT)
 
+
 @Singleton
 class TailF(Observable):
     log = Configuration.Instance().config['DEFAULT']['log_file']
@@ -57,15 +58,6 @@ class TailF(Observable):
                 time.sleep(0.5)
 
 
-def get_homebridge() -> HomeBridge:
-    return hb
-
-
-def getTailF() -> TailF:
-    return TailF.Instance()
-
-
 if __name__ == '__main__':
-    hb = HomeBridge()
-    hb.map_accessories()
+    HomeBridge.Instance().map_accessories()
     TailF.Instance().read()
