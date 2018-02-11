@@ -4,7 +4,7 @@ import threading
 import time
 from abc import abstractmethod
 from datetime import datetime
-
+import logging
 import requests
 from pygtail import Pygtail
 
@@ -14,6 +14,14 @@ SERVER = Configuration.Instance().config["DEFAULT"]["server"]
 PORT = Configuration.Instance().config["DEFAULT"]["port"]
 PIN_CODE = Configuration.Instance().config["DEFAULT"]["auth_code"]
 
+
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+logging.info("Starting time", time.time())
+logger.info("Server", SERVER)
+logger.info("Port", PORT)
 
 class Runner(Observer):
     def __init__(self, name, config):
@@ -29,11 +37,11 @@ class Runner(Observer):
         self.thread.start()
 
     def void_action(self):
-        print("Stopping Action")
+        logger.debug("Stopping Action")
         if self.stop is False and self.thread is not None:
             self.stop = True
             self.thread.join()
-            print("Action Stopped")
+            logger.debug("Action Stopped")
 
     @abstractmethod
     def is_trigger(self, line):
@@ -56,6 +64,7 @@ class AutoOff(Runner):
         self.iid = iid
         self.on_off_regex = re.compile(config['on_off_regex'], re.IGNORECASE)
         TailF.Instance().register(self)
+        logger.info("Created Action Listener AutoOff")
 
     @staticmethod
     def parse_auto_off(input_string, default_duration=1):
@@ -73,18 +82,18 @@ class AutoOff(Runner):
         return default_duration
 
     def update(self, payload):
-        print("payload", payload)
+        logger.debug("payload", payload)
         if self.is_trigger(payload, "On"):
             self.run_action()
         elif self.is_trigger(payload, "Off"):
             self.void_action()
         else:
-            print("Doing nothing")
+            logger.debug("Doing nothing")
 
     def is_trigger(self, line, state : str = "On"):
-        print(line)
+        logger.debug("Checking Trigger on", line)
         match = self.on_off_regex.match(line)
-        print(match)
+        logger.debug("Checking maching in is_trigger", match)
         if match is None:
             return False
         return match.groups()[2] == self.name and match.groups()[3] == state
@@ -98,7 +107,7 @@ class AutoOff(Runner):
                 raise InterruptedError
 
     def main(self):
-        print("running logic and waiting", self.time)
+        logger.info(self.__name__, "Queued Action", self.time)
         try:
             self.wait(self.time)
             HomeBridge.request("PUT", self.aid, self.iid, False)
@@ -196,7 +205,7 @@ class TailF(Observable):
         while True:
             try:
                 line = self.pygtail.next()
-                print(line)
+                logger.debug("TailF read line", line)
                 self.update_observers(line)
             except (StopIteration, PermissionError):
                 time.sleep(0.5)
