@@ -3,6 +3,7 @@ from typing import Dict
 import json
 import requests
 from Util import logger, Configuration, Singleton
+from automations import *
 
 
 @Singleton
@@ -46,7 +47,6 @@ class HomeBridge:
 
     def map_accessories(self):
         # noinspection PyUnresolvedReferences
-        from automations import *
         data = self.get_accessories()
         data = data['accessories']
         for i in data:
