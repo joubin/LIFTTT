@@ -3,13 +3,14 @@ from typing import Dict
 import json
 import requests
 from Util import logger, Configuration, Singleton
-from automations import automation_module as Runner
 
 
 @Singleton
 class HomeBridge:
     def __init__(self):
         from main import SERVER, PORT, PIN_CODE
+        from automations import automation_module as Runner
+
         self.url = "http://" + SERVER + ":" + PORT
         self.accessories = "/accessories"
         self.characteristics = "/characteristics"
@@ -20,7 +21,7 @@ class HomeBridge:
         }
         self.modules: Dict[str, Runner] = {}
 
-    def register_module(self, identifier: str, clazz: Runner):
+    def register_module(self, identifier: str, clazz):
         self.modules[identifier] = clazz
 
     def create_payload(self, aid, iid, value):
