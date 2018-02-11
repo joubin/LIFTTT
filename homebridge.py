@@ -60,6 +60,7 @@ class HomeBridge:
                         name = characteristics
                     if characteristics['type'] == "00000025-0000-1000-8000-0026BB765291":
                         on = characteristics
+                        logger.debug(type(on))
                         # print("aid --->", aid)
                         # print("name -->", name)
                         # print("on -->", on)
