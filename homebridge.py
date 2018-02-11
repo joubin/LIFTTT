@@ -70,3 +70,5 @@ class HomeBridge:
                                 logger.warning("No modules with the name %s",
                                                Configuration.Instance().config[name['value']][
                                                    'type'])
+                                for k, v in self.modules.items():
+                                    logger.warning("%s : %s", k, v)
