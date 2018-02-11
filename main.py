@@ -59,5 +59,8 @@ class TailF(Observable):
 
 
 if __name__ == '__main__':
+
+    import automations as myauto
+
     HomeBridge.Instance().map_accessories()
     TailF.Instance().read()

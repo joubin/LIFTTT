@@ -1,17 +1,17 @@
 from automations import automation_module
 import re, time
 from Util import logger
-from main import TailF, get_homebridge
+from main import TailF
 
 
 class AutoOff(automation_module.Runner):
+
     # auto_off = 30s
     # auto_off = 30m
     auto_off_time_regex = re.compile("(\d*).*(\w)", re.IGNORECASE)
 
-    super().register_with_homebridge("auto_off", AutoOff)
-
     def __init__(self, name, config, aid, iid):
+
         super().__init__(name, config)
         self.time = self.parse_auto_off(config['auto_off'])
         self.aid = aid
@@ -61,9 +61,14 @@ class AutoOff(automation_module.Runner):
                 raise InterruptedError
 
     def main(self):
+        from homebridge import HomeBridge
+
         logger.info("%s Queued Action %s", self.__class__, self.time)
         try:
             self.wait(self.time)
-            get_homebridge().request("PUT", self.aid, self.iid, False)
+            HomeBridge.Instance().request("PUT", self.aid, self.iid, False)
         except InterruptedError:
             pass
+
+
+automation_module.Runner.register_with_homebridge("auto_off", AutoOff)
