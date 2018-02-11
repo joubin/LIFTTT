@@ -48,6 +48,7 @@ class HomeBridge:
         data = self.get_accessories()
         logger.debug(data)
         data = data['accessories']
+        logger.debug("clean")
         logger.debug(data)
 
         for i in data:
