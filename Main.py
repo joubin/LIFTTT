@@ -16,7 +16,7 @@ PIN_CODE = Configuration.Instance().config["DEFAULT"]["auth_code"]
 
 
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=Configuration.Instance().config["DEFAULT"]["logging_level"])
 logger = logging.getLogger(__name__)
 
 logging.info("Starting time %s", time.time())
