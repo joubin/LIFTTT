@@ -107,7 +107,7 @@ class AutoOff(Runner):
                 raise InterruptedError
 
     def main(self):
-        logger.info("%s Queued Action %s", self.__name__, self.time)
+        logger.info("%s Queued Action %s", self.__class__, self.time)
         try:
             self.wait(self.time)
             HomeBridge.request("PUT", self.aid, self.iid, False)
