@@ -82,6 +82,4 @@ class Configuration():
 logging.basicConfig(level=Configuration.Instance().config["DEFAULT"]["logging_level"])
 logger = logging.getLogger(__name__)
 
-logging.info("Starting time %s", time.time())
-logger.info("Server %s", SERVER)
-logger.info("Port %s", PORT)
+

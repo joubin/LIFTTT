@@ -1,19 +1,19 @@
-import json
-import re
-import threading
-import time
-from abc import abstractmethod
-from datetime import datetime
 import logging
-import requests
+import time
+from datetime import datetime
+
 from pygtail import Pygtail
-from homebridge import HomeBridge
+
 from Util import Observable, Singleton, Configuration, logger
+from homebridge import HomeBridge
 
 SERVER = Configuration.Instance().config["DEFAULT"]["server"]
 PORT = Configuration.Instance().config["DEFAULT"]["port"]
 PIN_CODE = Configuration.Instance().config["DEFAULT"]["auth_code"]
 
+logging.info("Starting time %s", time.time())
+logger.info("Server %s", SERVER)
+logger.info("Port %s", PORT)
 
 @Singleton
 class TailF(Observable):
