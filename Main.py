@@ -93,7 +93,7 @@ class AutoOff(Runner):
     def is_trigger(self, line, state : str = "On"):
         logger.debug("Checking Trigger: %s", line)
         match = self.on_off_regex.match(line)
-        logger.debug("Checking maching in is_trigger: %s", match)
+        logger.debug("Checking matching in is_trigger: %s", match)
         if match is None:
             return False
         return match.groups()[2] == self.name and match.groups()[3] == state
@@ -141,9 +141,12 @@ class HomeBridge:
 
     @staticmethod
     def get_accessories():
-        return json.loads(
-            requests.request("GET", url=HomeBridge.url + HomeBridge.accessories,
-                             headers=HomeBridge.headers).text)
+        try:
+            return json.loads(
+                requests.request("GET", url=HomeBridge.url + HomeBridge.accessories,
+                                 headers=HomeBridge.headers).text)
+        except Exception as exception:
+            logger.error(exception)
 
     @staticmethod
     def map_accessories():
@@ -167,6 +170,8 @@ class HomeBridge:
                                 AutoOff(name=name['value'],
                                         config=Configuration.Instance().config[name['value']], aid=aid,
                                         iid=on['iid'])
+                            else:
+                                logger.warning("No modules with the name %s", Configuration.Instance().config[name['value']]['type'])
 
 
 @Singleton
