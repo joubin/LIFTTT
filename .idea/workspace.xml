@@ -38,8 +38,8 @@
       <file leaf-file-name="Main.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="362">
-              <caret line="208" column="43" lean-forward="true" selection-start-line="208" selection-start-column="43" selection-end-line="208" selection-end-column="43" />
+            <state relative-caret-position="347">
+              <caret line="207" column="23" lean-forward="false" selection-start-line="207" selection-start-column="16" selection-end-line="207" selection-end-column="23" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -88,6 +88,7 @@
       <find>threat</find>
       <find>threa</find>
       <find>instance()</find>
+      <find>logger.</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -421,8 +422,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="362">
-          <caret line="208" column="43" lean-forward="true" selection-start-line="208" selection-start-column="43" selection-end-line="208" selection-end-column="43" />
+        <state relative-caret-position="347">
+          <caret line="207" column="23" lean-forward="false" selection-start-line="207" selection-start-column="16" selection-end-line="207" selection-end-column="23" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>

@@ -19,9 +19,9 @@ PIN_CODE = Configuration.Instance().config["DEFAULT"]["auth_code"]
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-logging.info("Starting time", time.time())
-logger.info("Server", SERVER)
-logger.info("Port", PORT)
+logging.info("Starting time %s", time.time())
+logger.info("Server %s", SERVER)
+logger.info("Port %s", PORT)
 
 class Runner(Observer):
     def __init__(self, name, config):
@@ -82,7 +82,7 @@ class AutoOff(Runner):
         return default_duration
 
     def update(self, payload):
-        logger.debug("payload", payload)
+        logger.debug("payload %s", payload)
         if self.is_trigger(payload, "On"):
             self.run_action()
         elif self.is_trigger(payload, "Off"):
@@ -91,9 +91,9 @@ class AutoOff(Runner):
             logger.debug("Doing nothing")
 
     def is_trigger(self, line, state : str = "On"):
-        logger.debug("Checking Trigger on", line)
+        logger.debug("Checking Trigger: %s", line)
         match = self.on_off_regex.match(line)
-        logger.debug("Checking maching in is_trigger", match)
+        logger.debug("Checking maching in is_trigger: %s", match)
         if match is None:
             return False
         return match.groups()[2] == self.name and match.groups()[3] == state
@@ -107,7 +107,7 @@ class AutoOff(Runner):
                 raise InterruptedError
 
     def main(self):
-        logger.info(self.__name__, "Queued Action", self.time)
+        logger.info("%s Queued Action %s", self.__name__, self.time)
         try:
             self.wait(self.time)
             HomeBridge.request("PUT", self.aid, self.iid, False)
@@ -205,7 +205,7 @@ class TailF(Observable):
         while True:
             try:
                 line = self.pygtail.next()
-                logger.debug("TailF read line", line)
+                logger.debug("TailF read line: %s", line)
                 self.update_observers(line)
             except (StopIteration, PermissionError):
                 time.sleep(0.5)
