@@ -17,13 +17,19 @@ Requires Python 3.6+.
 ### Create a venv
 I recommend running this in a [virtual environment](https://docs.python.org/3/library/venv.html) (venv).
 
-```virtualenv -p `which python3.6` venv```
+```bash
+virtualenv -p `which python3.6` venv
+```
 
 ### Activate the enviroment
-```source venv/bin/activate```
+```bash
+source venv/bin/activate
+```
 
 ### Install Dependencies
-```pip install -r requirements.txt```
+```bash
+pip install -r requirements.txt
+```
 
 ## Configuration
 Provide a basic configuration
@@ -175,7 +181,7 @@ exit 0
 
 ### Add to startup items
 
-```shell
+```bash
 update-rc.d lifttt defaults 99
 ```
 
