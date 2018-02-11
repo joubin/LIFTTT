@@ -24,10 +24,9 @@ class Runner(Observer):
             logger.debug("Action Stopped")
 
 
-    @staticmethod
-    def register_with_homebridge(identifier:str, clazz:object):
-        HomeBridge.Instance().register_module(identifier=identifier, clazz=clazz)
-
+    @abstractmethod
+    def register_with_homebridge(self, identifier:str, clazz:object):
+        pass
 
     @abstractmethod
     def is_trigger(self, line):

@@ -3,7 +3,6 @@ from typing import Dict
 import json
 import requests
 from Util import logger, Configuration, Singleton
-from automations import timer_off_module
 
 @Singleton
 class HomeBridge:
@@ -21,7 +20,7 @@ class HomeBridge:
         }
         self.modules: Dict[str, Runner] = {}
 
-    def register_module(self, identifier: str, clazz):
+    def register_module(self, clazz, identifier: str ):
         self.modules[identifier] = clazz
 
     def create_payload(self, aid, iid, value):

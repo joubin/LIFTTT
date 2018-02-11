@@ -71,4 +71,3 @@ class AutoOff(automation_module.Runner):
             pass
 
 
-automation_module.Runner.register_with_homebridge("auto_off", AutoOff)
