@@ -61,8 +61,8 @@ class HomeBridge:
                         # print("on -->", on)
                         # print("\n")
                         if name['value'] in Configuration.Instance().config.sections():
-                            if Configuration.Instance().config[name['value']]['type'] == "auto_off":
-                                AutoOff(name=name['value'],
+                            if Configuration.Instance().config[name['value']]['type'] in self.modules.keys():
+                                Configuration.Instance().config[name['value']]['type'](name=name['value'],
                                         config=Configuration.Instance().config[name['value']],
                                         aid=aid,
                                         iid=on['iid'])
