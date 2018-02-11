@@ -64,6 +64,6 @@ def loaders():
 
 if __name__ == '__main__':
 
-
+    loaders()
     HomeBridge.Instance().map_accessories()
     TailF.Instance().read()
