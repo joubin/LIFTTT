@@ -3,7 +3,7 @@ from typing import Dict
 import json
 import requests
 from Util import logger, Configuration, Singleton
-
+from tailf import TailF
 
 @Singleton
 class HomeBridge:
@@ -23,6 +23,7 @@ class HomeBridge:
 
     def register_module(self, clazz, identifier: str):
         self.modules[identifier] = clazz
+
 
     def create_payload(self, aid, iid, value):
         values = [{'aid': aid, 'iid': iid, 'value': value}]

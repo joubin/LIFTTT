@@ -92,6 +92,7 @@ class Observer(object):
         pass
 
 
+
 @Singleton
 class Configuration():
     def __init__(self):
