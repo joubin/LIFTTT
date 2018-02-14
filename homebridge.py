@@ -4,6 +4,7 @@ import json
 import requests
 from Util import logger, Configuration, Singleton
 
+
 @Singleton
 class HomeBridge:
     def __init__(self):
@@ -20,7 +21,7 @@ class HomeBridge:
         }
         self.modules: Dict[str, Runner] = {}
 
-    def register_module(self, clazz, identifier: str ):
+    def register_module(self, clazz, identifier: str):
         self.modules[identifier] = clazz
 
     def create_payload(self, aid, iid, value):
@@ -30,10 +31,11 @@ class HomeBridge:
         return payload
 
     def request(self, method, aid, iid, value):
+
         return requests.request(method=method,
-                                url=HomeBridge.url + HomeBridge.characteristics,
-                                data=HomeBridge.create_payload(aid, iid, value),
-                                headers=HomeBridge.headers)
+                                url=self.url + self.characteristics,
+                                data=self.create_payload(aid=aid, iid=iid, value=value),
+                                headers=self.headers)
 
     def get_accessories(self):
         try:
@@ -66,11 +68,14 @@ class HomeBridge:
                         # print("on -->", on)
                         # print("\n")
                         if name['value'] in Configuration.Instance().config.sections():
-                            if Configuration.Instance().config[name['value']]['type'] in self.modules.keys():
-                                self.modules[Configuration.Instance().config[name['value']]['type']](name=name['value'],
-                                        config=Configuration.Instance().config[name['value']],
-                                        aid=aid,
-                                        iid=on['iid'])
+                            if Configuration.Instance().config[name['value']][
+                                'type'] in self.modules.keys():
+                                self.modules[
+                                    Configuration.Instance().config[name['value']]['type']](
+                                    name=name['value'],
+                                    config=Configuration.Instance().config[name['value']],
+                                    aid=aid,
+                                    iid=on['iid'])
                             else:
                                 logger.warning("No modules with the name %s",
                                                Configuration.Instance().config[name['value']][
