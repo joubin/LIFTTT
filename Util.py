@@ -91,7 +91,7 @@ class Observable(object):
             tmp.append(self.observers.get())
         i : Observer
         for i in tmp:
-            i.update(payload=payload)
+            self.update_observers(payload=payload)
             self.observers.put(i)
 
 
