@@ -48,6 +48,7 @@ class Observable(object):
         self.observers = []
 
     def register(self, observer):
+        print("calling register on observable")
         if not observer in self.observers:
             self.observers.append(observer)
 

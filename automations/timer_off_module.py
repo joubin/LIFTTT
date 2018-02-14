@@ -9,6 +9,7 @@ class AutoOff(automation_module.Runner):
     # auto_off = 30s
     # auto_off = 30m
     auto_off_time_regex = re.compile("(\d*).*(\w)", re.IGNORECASE)
+    tailF : TailF = TailF.Instance()
 
     def __init__(self, name, config, aid, iid):
 
@@ -18,6 +19,8 @@ class AutoOff(automation_module.Runner):
         self.iid = iid
         self.on_off_regex = re.compile(config['on_off_regex'], re.IGNORECASE)
         TailF.Instance().register(self)
+        AutoOff.tailF.register(self)
+
         logger.info("Created Action Listener AutoOff")
         self.run_action()
 
