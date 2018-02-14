@@ -25,10 +25,6 @@ class Runner(Observer):
 
 
     @abstractmethod
-    def register_with_homebridge(self, identifier:str, clazz:object):
-        pass
-
-    @abstractmethod
     def is_trigger(self, line):
         pass
 

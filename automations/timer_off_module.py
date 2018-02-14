@@ -6,6 +6,17 @@ from main import TailF
 
 class AutoOff(automation_module.Runner):
 
+
+
+    def update(self, payload):
+        logger.debug("payload %s", payload)
+        if self.is_trigger(payload, "On"):
+            self.run_action()
+        elif self.is_trigger(payload, "Off"):
+            self.void_action()
+        else:
+            logger.debug("Doing nothing")
+
     # auto_off = 30s
     # auto_off = 30m
     auto_off_time_regex = re.compile("(\d*).*(\w)", re.IGNORECASE)
@@ -34,14 +45,7 @@ class AutoOff(automation_module.Runner):
             return duration * multiplier
         return default_duration
 
-    def update(self, payload):
-        logger.debug("payload %s", payload)
-        if self.is_trigger(payload, "On"):
-            self.run_action()
-        elif self.is_trigger(payload, "Off"):
-            self.void_action()
-        else:
-            logger.debug("Doing nothing")
+
 
     def is_trigger(self, line, state: str = "On"):
         logger.debug("Checking Trigger: %s", line)

@@ -1,7 +1,6 @@
 import configparser
 from abc import ABCMeta, abstractmethod
 import logging
-
 from multiprocessing import Queue
 from typing import List
 
@@ -50,6 +49,7 @@ class Observer(object):
 
     @abstractmethod
     def update(self, payload):
+
         pass
 
 
