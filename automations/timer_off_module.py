@@ -14,13 +14,11 @@ class AutoOff(automation_module.Runner):
     def __init__(self, name, config, aid, iid):
 
         super().__init__(name, config)
+        TailF.Instance().register(self)
         self.time = self.parse_auto_off(config['auto_off'])
         self.aid = aid
         self.iid = iid
         self.on_off_regex = re.compile(config['on_off_regex'], re.IGNORECASE)
-        TailF.Instance().register(self)
-        AutoOff.tailF.register(self)
-
         logger.info("Created Action Listener AutoOff")
         self.run_action()
 

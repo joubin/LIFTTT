@@ -58,13 +58,15 @@ class TailF(Observable):
             except (StopIteration, PermissionError):
                 time.sleep(0.5)
 
+
 def loaders():
     from automations.timer_off_module import AutoOff
-    hb : HomeBridge = HomeBridge.Instance()
+    hb: HomeBridge = HomeBridge.Instance()
     hb.register_module(clazz=AutoOff, identifier="auto_off")
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
+    logReader = TailF.Instance()
     loaders()
     HomeBridge.Instance().map_accessories()
-    TailF.Instance().read()
+    logReader.read()

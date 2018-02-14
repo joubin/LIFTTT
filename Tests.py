@@ -1,18 +1,29 @@
 test_arr = {}
-
-class Test:
-    def __init__(self, value):
-        self.value = value
-        self.fart = "ASD"
-
-    @staticmethod
-    def register():
-        test_arr["test"] = Test
+from Util import *
+@Singleton
+class TOB(Observable):
 
 
-Test.register()
+    def dosomething(self):
+        self.update_observers("test")
 
-x = test_arr['test'](value="www")
 
-print(x.value)
-print(x.fart)
+
+
+class TO(Observer):
+    def update(self, payload):
+        print(payload)
+
+    def __init__(self, ):
+        self.name = "observer"
+        TOB.Instance().register(self)
+
+
+
+
+observer1 = TO()
+observer2 = TO()
+observer3 = TO()
+observer4 = TO()
+observer5 = TO()
+TOB.Instance().dosomething()

@@ -43,7 +43,6 @@ class Singleton:
 
 
 class Observable(object):
-
     def __init__(self):
         self.observers = []
 
