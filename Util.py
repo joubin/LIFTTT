@@ -2,6 +2,8 @@ import configparser
 from abc import ABCMeta, abstractmethod
 import logging
 
+from multiprocessing import Queue
+
 
 class Singleton:
     """
@@ -44,24 +46,40 @@ class Singleton:
 
 class Observable(object):
     def __init__(self):
-        self.observers = []
+        self.observers = Queue()
 
     def register(self, observer):
-        print("calling register on observable")
         if not observer in self.observers:
-            self.observers.append(observer)
+            print("calling register on observable")
+            # self.observers.append(observer)
+            self.observers.put(observer)
+
 
     def unregister(self, observer):
         if observer in self.observers:
-            self.observers.remove(observer)
+            # this is bad, fix later
+            tmp = []
+            while self.observers.qsize() > 0:
+                tmp.append(self.observers.get())
+            tmp.remove(observer)
+            for i in tmp:
+                self.observers.put(i)
+
 
     def unregister_all(self):
         if self.observers:
-            del self.observers[:]
+            while self.observers.qsize() > 0:
+                self.observers.get()
 
     def update_observers(self, payload):
-        for observer in self.observers:
-            observer.update(payload)
+
+            # this is bad, fix later
+        tmp = []
+        while self.observers.qsize() > 0:
+            tmp.append(self.observers.get())
+        for i in tmp:
+            i.update(payload)
+            self.observers.put(i)
 
 
 class Observer(object):
