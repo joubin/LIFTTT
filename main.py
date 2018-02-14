@@ -53,7 +53,7 @@ class TailF(Observable):
             try:
                 line = self.pygtail.next()
                 logger.debug("TailF read line: %s", line)
-                logger.debug("Notifying %s observers", len(self.observers))
+                logger.debug("Notifying %s observers", self.observers.qsize())
                 self.update_observers(line)
             except (StopIteration, PermissionError):
                 time.sleep(0.5)
