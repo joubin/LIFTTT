@@ -49,14 +49,16 @@ class Observable(object):
         self.observers = Queue()
 
     def register(self, observer):
-        if not observer in self.observers:
-            print("calling register on observable")
-            # self.observers.append(observer)
-            self.observers.put(observer)
+        tmp = []
+        while self.observers.qsize() > 0:
+            tmp.append(self.observers.get())
+        tmp.append(observer)
+        tmp = list(set(tmp))
+        for i in tmp:
+            self.observers.put(i)
 
 
     def unregister(self, observer):
-        if observer in self.observers:
             # this is bad, fix later
             tmp = []
             while self.observers.qsize() > 0:
