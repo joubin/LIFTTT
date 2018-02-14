@@ -63,8 +63,6 @@ class AutoOff(automation_module.Runner):
 
     def main(self):
         from homebridge import HomeBridge
-
-        logger.info("%s Queued Action %s", self.__class__, self.time)
         try:
             self.wait(self.time)
             HomeBridge.Instance().request("PUT", self.aid, self.iid, False)
