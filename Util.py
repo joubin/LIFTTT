@@ -3,6 +3,7 @@ from abc import ABCMeta, abstractmethod
 import logging
 
 from multiprocessing import Queue
+from typing import List
 
 
 class Singleton:
@@ -44,6 +45,15 @@ class Singleton:
         return isinstance(inst, self._decorated)
 
 
+class Observer(object):
+    __metaclass__ = ABCMeta
+
+    @abstractmethod
+    def update(self, payload):
+        pass
+
+
+
 class Observable(object):
     def __init__(self):
         self.observers = Queue()
@@ -76,20 +86,14 @@ class Observable(object):
     def update_observers(self, payload):
 
             # this is bad, fix later
-        tmp = []
+        tmp : List(Observer) = []
         while self.observers.qsize() > 0:
             tmp.append(self.observers.get())
+        i : Observer
         for i in tmp:
-            i.update(payload)
+            i.update(payload=payload)
             self.observers.put(i)
 
-
-class Observer(object):
-    __metaclass__ = ABCMeta
-
-    @abstractmethod
-    def update(self, payload):
-        pass
 
 
 
