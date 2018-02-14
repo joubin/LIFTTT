@@ -19,6 +19,7 @@ class AutoOff(automation_module.Runner):
         self.on_off_regex = re.compile(config['on_off_regex'], re.IGNORECASE)
         TailF.Instance().register(self)
         logger.info("Created Action Listener AutoOff")
+        self.run_action()
 
     @staticmethod
     def parse_auto_off(input_string, default_duration=1):
